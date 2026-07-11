@@ -28,7 +28,7 @@ Apply these settings in the Railway template composer when generating the templa
 
 ## 3. No Database Service
 
-Uptime Kuma uses an embedded SQLite database stored at `/app/data` on the Railway-managed volume. No separate Postgres, Redis, or other database services are required.
+No separate Postgres, Redis, or other Railway database service is required — Uptime Kuma 2.x's own first-run wizard asks you to choose **Embedded MariaDB** or **SQLite**, both of which run entirely inside the same container on the `/app/data` volume. **Recommend keeping the default "Embedded MariaDB"** (officially recommended for new installs, better concurrent-write handling) — do not pick "MariaDB/MySQL" (external), since that requires a separate database service this template doesn't provision. Note that migrating from SQLite to MariaDB later is not supported by Uptime Kuma, so this is effectively a one-time, permanent choice — worth calling out explicitly to whoever deploys this, not just leaving them to guess.
 
 ---
 
@@ -39,7 +39,7 @@ The volume mounted at `/app/data` stores:
 - **Uptime history** (historical data for each monitor)
 - **Incident records** (downtime events and duration)
 - **Notification templates** (alert message configurations)
-- **SQLite database** (single `kuma.sqlite3` file)
+- **Database files** — either the embedded MariaDB data directory (default/recommended) or a single `kuma.sqlite3` file, depending on which option is chosen on first run (see section 3)
 
 Ensure the volume is created and attached before deploying:
 
@@ -76,11 +76,12 @@ After the template is published, test-deploy from a fresh Railway account (incog
 
 ### Initial Setup After Deploy
 
-1. Visit your Railway domain (e.g., `uptime-kuma-prod-xyz.railway.app`)
-2. Create an admin account with a strong password
-3. Add your first monitor: Settings → Add Monitor
-4. Test a simple HTTP endpoint (e.g., `https://www.google.com`)
-5. Set up notifications if desired: Settings → Notification
+1. Visit your Railway domain (e.g., `uptime-kuma-prod-xyz.railway.app`) — root redirects to `/setup-database`
+2. **Database choice screen:** keep the pre-selected "Embedded MariaDB" and click Next (see section 3 for why)
+3. **Create admin account screen:** this is a fresh account created on the spot, not a pre-generated credential from any Railway variable — pick any username/password
+4. Add your first monitor: Settings → Add Monitor
+5. Test a simple HTTP endpoint (e.g., `https://www.google.com`)
+6. Set up notifications if desired: Settings → Notification
 
 ---
 
@@ -116,7 +117,12 @@ Common causes:
 ### Volume not persisting data
 - Verify volume is attached: `railway volume list`
 - Confirm mount path is `/app/data`
-- Monitor data is stored in SQLite file at `/app/data/kuma.sqlite3`
+- Data lives in the embedded MariaDB data directory under `/app/data` by default, or `/app/data/kuma.sqlite3` if SQLite was chosen on first run
+
+### Docker VOLUME instruction breaks the build
+- Railway's builder rejects Docker's native `VOLUME` instruction outright: `dockerfile invalid: docker VOLUME at Line N is not supported, use Railway Volumes`
+- Never add `VOLUME /app/data` (or any `VOLUME` line) to the Dockerfile — persistence is handled entirely via `railway volume add --mount-path /app/data`, which doesn't require any Dockerfile declaration at all
+- This bug was hit and fixed during this template's own initial build (commit `ce0984a`) — if you fork this template, don't reintroduce it
 
 ### Healthcheck timing out
 - Increase timeout in railway.toml to 300 seconds if needed

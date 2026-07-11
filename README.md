@@ -10,17 +10,18 @@ Open-source, self-hosted monitoring & status page tool. Deploy on Railway with o
 - **Status page** — Public-facing status dashboard showing service health and incident history
 - **Incident tracking** — Record and communicate downtime with maintenance windows and notifications
 - **Smart notifications** — Alerts via email, SMS, Slack, Discord, Telegram, Pushover, and 20+ integrations
-- **No external dependencies** — Single container with SQLite persistence, runs entirely on your infrastructure
+- **No external dependencies** — Single container with embedded database persistence (MariaDB or SQLite, your choice on first run), runs entirely on your infrastructure
 - **Unlimited monitors** — Create as many monitors as you need without per-monitor costs
 - **Backup & restore** — Export and import monitor configurations and history
 
 ## Getting Started
 
 1. Click the "Deploy on Railway" button above
-2. Wait for deployment to complete
-3. Visit your Railway domain to access Uptime Kuma
-4. Create your first monitor in the dashboard
-5. Set up notifications by connecting your preferred channels (Slack, Discord, email, etc.)
+2. Wait for deployment to complete, then visit your Railway domain
+3. **First screen: choose a database.** Keep the pre-selected **"Embedded MariaDB"** and click Next — it runs inside the same container (no extra Railway service needed) and is the officially recommended option for new installs. Avoid "SQLite" if you might monitor many hosts on short intervals later — migrating from SQLite to MariaDB afterward isn't supported by Uptime Kuma, so this choice is effectively permanent. "MariaDB/MySQL" (external) isn't usable here since this template doesn't provision a separate database service.
+4. **Second screen: create your admin account.** This is a fresh account you create yourself, not a pre-generated credential — pick any username and password.
+5. Create your first monitor in the dashboard
+6. Set up notifications by connecting your preferred channels (Slack, Discord, email, etc.)
 
 ## Configuration
 
@@ -43,7 +44,7 @@ Configure notifications through the Uptime Kuma web interface:
 
 - **Image:** `louislam/uptime-kuma:2` (official Docker image)
 - **Port:** 3001
-- **Volume:** `/app/data` (SQLite database + monitor history)
+- **Volume:** `/app/data` (database files + monitor history — embedded MariaDB by default, or SQLite if chosen on first run)
 - **Memory:** 256 MB minimum recommended
 - **CPU:** Shared instance sufficient for most workloads
 
