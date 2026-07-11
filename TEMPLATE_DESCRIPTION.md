@@ -41,15 +41,22 @@ UptimeRobot Pro costs $8 per month for 50 monitors. Pingdom's cheapest tier runs
 
 ## Dependencies for Uptime Kuma Docker hosted on Railway
 
-Uptime Kuma runs as a Node.js container with SQLite. No Redis, PostgreSQL, or message queue needed. Railway manages persistent storage at `/app/data` for configurations, history, and incident records. Network connectivity works out of the box.
+Uptime Kuma runs as a single Node.js container with an embedded database (MariaDB or SQLite)—no separate Postgres or message queue needed. Railway manages persistent storage at `/app/data` for configs, history, and incident records.
 
 ### Deployment Dependencies for Managed Uptime Kuma Service (OSS Monitoring)
 
-This template deploys the official `louislam/uptime-kuma:2` Docker image as a single service with a Railway-managed volume for data persistence. No additional services are required. The container listens on port 3001 and handles all monitoring logic, notifications, and web UI in one process.
+This template deploys the official `louislam/uptime-kuma:2` image as a single service with a Railway-managed volume for persistence—no additional services required. The container listens on port 3001 and handles monitoring, notifications, and the web UI in one process.
 
 ### Implementation Details for Uptime Kuma (Using official uptime-kuma Docker image)
 
-The template deploys `louislam/uptime-kuma:2` on port 3001. Railway's managed volume mounts at `/app/data` for SQLite persistence. The app starts in under 30 seconds and is immediately ready to create monitors. Visit your Railway domain to access the dashboard, then add HTTP/TCP/DNS monitors and configure notifications through the web UI.
+The template deploys `louislam/uptime-kuma:2` on port 3001, with Railway's managed volume mounted at `/app/data`. First visit shows a one-time database choice (keep the default "Embedded MariaDB") then account creation, both under 30 seconds. From there, add HTTP/TCP/DNS monitors and configure notifications through the web UI.
+
+## Environment Variables Reference for Uptime Kuma on Railway
+
+| Variable | Description | Value |
+|----------|-------------|-------|
+| `PORT` | The port Uptime Kuma listens on. | `3001` |
+| `RAILWAY_HEALTHCHECK_PATH` | Endpoint Railway uses to verify the service is healthy. | `/` |
 
 ## How does Uptime Kuma compare against other monitoring platforms
 
@@ -92,11 +99,11 @@ Run `docker run -d --restart=always -p 3001:3001 -v uptime-kuma:/app/data --name
 
 ## Official Pricing of Uptime Kuma (Uptime Kuma pricing)
 
-Uptime Kuma is released under the AGPL-3.0 license. The core monitoring engine is completely free to self-host forever with no per-monitor fees or feature tiers. No cloud offering is available—self-hosting is the only deployment model. Railway covers hosting costs, typically $5–15 monthly depending on notification volume and data retention.
+Uptime Kuma is AGPL-3.0 licensed—free to self-host forever, no per-monitor fees or tiers, no official cloud offering. Railway covers hosting costs, typically $5–15/month depending on notification volume and data retention.
 
 ## Uptime Kuma cloud vs self hosted comparison (Pricing, features, costs, and more)
 
-Uptime Kuma has no official cloud offering, so self-hosting is the default. You control every aspect of your monitoring setup: notification integrations, data retention policies, check intervals, and infrastructure location.
+With no official cloud offering, self-hosting is default. You control every aspect of your setup: notification integrations, retention policies, check intervals, infrastructure location.
 
 ### Monthly cost of self hosting Uptime Kuma on Railway
 
