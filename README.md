@@ -1,0 +1,67 @@
+# Uptime Kuma on Railway
+
+Open-source, self-hosted monitoring & status page tool. Deploy on Railway with one click.
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/uptime-kuma)
+
+## Features
+
+- **Real-time monitoring** — Track HTTP, HTTPS, TCP, DNS, Ping, and Socket endpoints with 20-second intervals
+- **Status page** — Public-facing status dashboard showing service health and incident history
+- **Incident tracking** — Record and communicate downtime with maintenance windows and notifications
+- **Smart notifications** — Alerts via email, SMS, Slack, Discord, Telegram, Pushover, and 20+ integrations
+- **No external dependencies** — Single container with SQLite persistence, runs entirely on your infrastructure
+- **Unlimited monitors** — Create as many monitors as you need without per-monitor costs
+- **Backup & restore** — Export and import monitor configurations and history
+
+## Getting Started
+
+1. Click the "Deploy on Railway" button above
+2. Wait for deployment to complete
+3. Visit your Railway domain to access Uptime Kuma
+4. Create your first monitor in the dashboard
+5. Set up notifications by connecting your preferred channels (Slack, Discord, email, etc.)
+
+## Configuration
+
+### Persistent Data
+
+All monitor data, incident history, and configuration is stored in `/app/data` on a Railway-managed volume. This persists across redeploys.
+
+### Default Port
+
+Uptime Kuma runs on port 3001 and is automatically exposed via your Railway public domain.
+
+### Notifications
+
+Configure notifications through the Uptime Kuma web interface:
+- Settings → Notification
+- Add your integration (Slack, Discord, email, etc.)
+- Attach notifications to individual monitors
+
+## Deployment Details
+
+- **Image:** `louislam/uptime-kuma:2` (official Docker image)
+- **Port:** 3001
+- **Volume:** `/app/data` (SQLite database + monitor history)
+- **Memory:** 256 MB minimum recommended
+- **CPU:** Shared instance sufficient for most workloads
+
+## Monitoring Use Cases
+
+- **Server health checks** — Verify APIs and web services are responding
+- **Domain & certificate expiry** — Get alerted before SSL certificates expire
+- **Scheduled maintenance** — Communicate planned downtime to users
+- **Team visibility** — Share status page with stakeholders
+- **SLA tracking** — Maintain uptime reports for compliance
+- **Multi-region health** — Monitor endpoints across geographic regions
+
+## Support & Documentation
+
+- Official Docs: https://github.com/louislam/uptime-kuma/wiki
+- GitHub Issues: https://github.com/louislam/uptime-kuma/issues
+- Live Demo: https://demo.uptime.kuma.pet
+
+## License
+
+AGPL-3.0 — free to self-host forever
